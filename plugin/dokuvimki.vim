@@ -28,6 +28,14 @@ endif
 if (has('python3') || has('python')) && version > 700
   command! -nargs=0 DokuVimKi exec('Py dokuvimki()')
 
+  if !exists('g:DokuVimKi_BASICUSER')
+    let g:DokuVimKi_BASICUSER=0
+  endif
+
+  if !exists('g:DokuVimKi_BASICPASS')
+    let g:DokuVimKi_BASICPASS=0
+  endif
+
   if !exists('g:DokuVimKi_INDEX_WINWIDTH')
     let g:DokuVimKi_INDEX_WINWIDTH=30
   endif
@@ -152,6 +160,10 @@ class DokuVimKi:
             print("dokuwikixmlrpc python module missing!", file=sys.stderr)
             return
 
+        """Basic auth stuff"""
+        self.dw_basic_user = vim.eval('g:DokuVimKi_BASICUSER')
+        self.dw_basic_pass = vim.eval('g:DokuVimKi_BASICPASS')
+
         if self.xmlrpc_init():
 
             vim.command("command! -complete=customlist,CmdModeComplete -nargs=1 DWedit exec('Py dokuvimki.edit(<f-args>)')")
@@ -208,7 +220,7 @@ class DokuVimKi:
             return False
 
         try:
-            self.xmlrpc = dokuwikixmlrpc.DokuWikiClient(self.dw_url, self.dw_user, self.dw_pass)
+            self.xmlrpc = dokuwikixmlrpc.DokuWikiClient(self.dw_url, self.dw_user, self.dw_pass, http_basic_user=self.dw_basic_user, http_basic_passwd=self.dw_basic_pass)
             print('Connection to ' + vim.eval('g:DokuVimKi_URL') + ' established!', file=sys.stdout)
             return True
         except dokuwikixmlrpc.DokuWikiXMLRPCError as err:
