@@ -693,7 +693,7 @@ class DokuVimKi:
                     print("Warning: %s contains unsaved changes! Use DWclose!." % buffer, file=sys.stderr)
                     return
 
-                vim.command('bp!')
+                vim.command('silent! bp!')
                 vim.command('bdel! ' + self.buffers[buffer].num)
                 if self.buffers[buffer].type == 'acwrite':
                     self.unlock(buffer)
